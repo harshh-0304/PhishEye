@@ -154,7 +154,8 @@ st.markdown("""
     Input a URL below to get an instant classification.
 """)
 
-user_input = st.text_input("Enter URL to analyze:", "https://security-update-bankofamerica.com/login?id=123", help="Try entering a suspicious URL or a legitimate one like https://google.com")
+with st.container():
+    user_input = st.text_input("Enter URL to analyze:", "https://security-update-bankofamerica.com/login?id=123", help="Try entering a suspicious URL or a legitimate one like https://google.com")
 
 st.markdown("---")
 
