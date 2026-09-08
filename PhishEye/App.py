@@ -136,7 +136,7 @@ def get_features_from_url(url):
     return pd.DataFrame([feature_values], columns=feature_names)
 
 # --- 3. Streamlit UI ---
-st.set_page_config(page_title="PhishEye Detector", page_icon="👁️", layout="wide")
+st.set_page_config(page_title="PhishEye Premium", page_icon="🛡️", layout="wide", initial_sidebar_state="expanded")
 
 def local_css(file_name):
     with open(file_name) as f:
