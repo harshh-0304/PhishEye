@@ -178,7 +178,7 @@ if st.button("Analyze URL", type="primary"):
             if prediction == 0: # 0 for phishing
                 st.markdown('<div class="status-card error"><h3>🚨 PHISHING DETECTED!</h3><p>Proceed with extreme caution.</p></div>', unsafe_allow_html=True)
             else: # 1 for safe
-                st.success("✅ SAFE - No Phishing Detected")
+                st.markdown('<div class="status-card success"><h3>✅ SAFE</h3><p>No Phishing Detected.</p></div>', unsafe_allow_html=True)
 
         with col2:
             confidence = prediction_proba[prediction] * 100
