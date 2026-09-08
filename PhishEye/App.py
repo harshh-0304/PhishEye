@@ -182,7 +182,7 @@ if st.button("Analyze URL", type="primary"):
 
         with col2:
             confidence = prediction_proba[prediction] * 100
-            st.metric(label="Confidence", value=f"{confidence:.2f}%")
+            st.markdown(f'<div class="status-card" style="text-align: center;"><h4>Confidence Score</h4><h2 style="color: #4facfe;">{confidence:.2f}%</h2></div>', unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("### Reasoning & Key Indicators:")
