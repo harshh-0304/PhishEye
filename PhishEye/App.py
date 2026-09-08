@@ -145,6 +145,9 @@ def local_css(file_name):
 local_css("style.css")
 
 st.markdown("<h1 style='text-align: center; color: #00f2fe;'>🛡️ PhishEye Real-time Detector</h1>", unsafe_allow_html=True)
+st.sidebar.image("https://img.icons8.com/color/96/000000/phishing.png", width=80)
+st.sidebar.title("About PhishEye")
+st.sidebar.info("This tool uses Machine Learning to analyze URL features and predict if a website is a phishing attempt or legitimate.")
 st.markdown("---")
 st.markdown("""
     This application helps detect potential phishing attempts by analyzing various features of a URL.
