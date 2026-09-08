@@ -144,7 +144,7 @@ def local_css(file_name):
 
 local_css("style.css")
 
-st.markdown("<h1 style='text-align: center; color: #00f2fe;'>🛡️ PhishEye Real-time Detector</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; color: #f8fafc; letter-spacing: -0.02em;'>🛡️ PhishEye Real-time Detector</h1>", unsafe_allow_html=True)
 st.sidebar.image("https://img.icons8.com/color/96/000000/phishing.png", width=80)
 st.sidebar.title("About PhishEye")
 st.sidebar.info("This tool uses Machine Learning to analyze URL features and predict if a website is a phishing attempt or legitimate.")
@@ -182,7 +182,7 @@ if st.button("Analyze URL", type="primary"):
 
         with col2:
             confidence = prediction_proba[prediction] * 100
-            st.markdown(f'<div class="status-card" style="text-align: center;"><h4>Confidence Score</h4><h2 style="color: #4facfe;">{confidence:.2f}%</h2></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="status-card" style="text-align: center;"><h4>Confidence Score</h4><h2 class="mono-text" style="color: #0ea5e9;">{confidence:.2f}%</h2></div>', unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("### Reasoning & Key Indicators:")
