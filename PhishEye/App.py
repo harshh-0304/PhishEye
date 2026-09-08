@@ -144,7 +144,7 @@ def local_css(file_name):
 
 local_css("style.css")
 
-st.title("👁️ PhishEye: Real-time Phishing Detector")
+st.markdown("<h1 style='text-align: center; color: #00f2fe;'>🛡️ PhishEye Real-time Detector</h1>", unsafe_allow_html=True)
 st.markdown("---")
 st.markdown("""
     This application helps detect potential phishing attempts by analyzing various features of a URL.
