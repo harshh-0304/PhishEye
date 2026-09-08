@@ -138,6 +138,12 @@ def get_features_from_url(url):
 # --- 3. Streamlit UI ---
 st.set_page_config(page_title="PhishEye Detector", page_icon="👁️", layout="wide")
 
+def local_css(file_name):
+    with open(file_name) as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+local_css("style.css")
+
 st.title("👁️ PhishEye: Real-time Phishing Detector")
 st.markdown("---")
 st.markdown("""
