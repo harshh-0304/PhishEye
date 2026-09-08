@@ -226,4 +226,4 @@ if st.button("Analyze URL", type="primary"):
         st.warning("Please enter a URL to analyze.")
 
 st.markdown("---")
-st.markdown("Developed for demonstrating ML model training, feature engineering, and deployment.")
+st.markdown("<div style='text-align: center; margin-top: 50px; opacity: 0.6;'>Developed for demonstrating ML model training and modern deployment.</div>", unsafe_allow_html=True)
