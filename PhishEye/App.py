@@ -151,9 +151,21 @@ st.markdown("""
         <p style='color: #94a3b8; font-size: 1.05rem; max-width: 600px; margin: 0 auto;'>Instant Machine Learning threat detection for suspicious domains & URLs.</p>
     </div>
 """, unsafe_allow_html=True)
-st.sidebar.image("https://img.icons8.com/color/96/000000/phishing.png", width=80)
-st.sidebar.title("About PhishEye")
-st.sidebar.info("This tool uses Machine Learning to analyze URL features and predict if a website is a phishing attempt or legitimate.")
+with st.sidebar:
+    st.image("https://img.icons8.com/color/96/000000/phishing.png", width=70)
+    st.title("PhishEye Cyber Guard")
+    st.markdown("""
+        <div style='background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;'>
+            <p style='color: #e2e8f0; font-size: 0.85rem; margin: 0;'>
+                Real-time threat detection trained on <strong>30 structural URL features</strong> using Random Forest classification.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    st.markdown("### Stack & Model")
+    st.caption("• Framework: Streamlit + Python\n• Model: Scikit-learn Classifier\n• Features: 30 URL vectors")
+    st.markdown("---")
+    st.markdown("[🔗 GitHub Repository](https://github.com/harshh-0304/PhishEye)")
+
 st.markdown("---")
 
 with st.container():
