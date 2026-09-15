@@ -157,7 +157,20 @@ st.sidebar.info("This tool uses Machine Learning to analyze URL features and pre
 st.markdown("---")
 
 with st.container():
-    user_input = st.text_input("Enter URL to analyze:", "https://security-update-bankofamerica.com/login?id=123", help="Try entering a suspicious URL or a legitimate one like https://google.com")
+    st.markdown("**Quick Preset Test Cases:**")
+    btn_col1, btn_col2, btn_col3 = st.columns(3)
+    default_url = "https://security-update-bankofamerica.com/login?id=123"
+    if "current_url" not in st.session_state:
+        st.session_state["current_url"] = default_url
+
+    if btn_col1.button("🚨 Phishing Sample", use_container_width=True):
+        st.session_state["current_url"] = "http://paypal-security-account-update.login-auth.com/verify@user"
+    if btn_col2.button("✅ Safe Domain Sample", use_container_width=True):
+        st.session_state["current_url"] = "https://google.com"
+    if btn_col3.button("⚠️ Shortened Link", use_container_width=True):
+        st.session_state["current_url"] = "http://bit.ly/secure-account-login"
+
+    user_input = st.text_input("Enter URL to analyze:", value=st.session_state["current_url"], help="Try entering a suspicious URL or a legitimate one like https://google.com")
 
 st.markdown("---")
 
