@@ -281,8 +281,17 @@ if st.button("Analyze URL", type="primary"):
             df_display.columns = ["Feature Name", "Extracted Value (-1: Risk, 0: Neutral, 1: Safe)"]
             st.dataframe(df_display, use_container_width=True, hide_index=True)
         
+        if len(st.session_state["history"]) > 1:
+            with st.expander(f"📜 Session Scan History ({len(st.session_state['history'])} URLs scanned)"):
+                st.dataframe(pd.DataFrame(st.session_state["history"]), use_container_width=True, hide_index=True)
+        
     else:
         st.warning("Please enter a URL to analyze.")
 
 st.markdown("---")
-st.markdown("<div style='text-align: center; margin-top: 50px; opacity: 0.6;'>Developed for demonstrating ML model training and modern deployment.</div>", unsafe_allow_html=True)
+st.markdown("""
+    <div style='text-align: center; margin-top: 40px; margin-bottom: 20px; opacity: 0.75; font-size: 0.85rem;'>
+        <p style='margin-bottom: 4px;'><strong>PhishEye Real-Time Phishing Detector v2.0</strong> &bull; Developed by <a href='https://github.com/harshh-0304' target='_blank' style='color: #0ea5e9; text-decoration: none;'>harshh-0304</a></p>
+        <p style='color: #64748b; margin: 0;'>Powered by Streamlit & ML Classification | MIT License</p>
+    </div>
+""", unsafe_allow_html=True)
