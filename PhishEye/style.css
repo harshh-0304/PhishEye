@@ -33,18 +33,21 @@
 
 /* Glassmorphism Inputs */
 .stTextInput>div>div>input {
-    background-color: rgba(24, 24, 27, 0.7) !important; /* Zinc 900 */
-    border-radius: 8px !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: #f8fafc !important;
+    background-color: rgba(24, 24, 27, 0.75) !important; /* Zinc 900 */
+    border-radius: 10px !important;
+    border: 1px solid var(--border-subtle) !important;
+    color: var(--text-primary) !important;
     font-family: 'JetBrains Mono', monospace !important; /* URLs should be mono */
-    padding: 0.75rem 1rem !important;
-    transition: all 0.2s ease;
+    padding: 0.85rem 1.15rem !important;
+    font-size: 0.95rem !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .stTextInput>div>div>input:focus {
-    border-color: #0ea5e9 !important;
-    box-shadow: 0 0 0 1px #0ea5e9 !important;
+    border-color: var(--accent-blue) !important;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
 }
 
 /* Tactile Primary Button (No Neon Gradients) */
