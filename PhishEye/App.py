@@ -184,7 +184,16 @@ if st.button("Analyze URL", type="primary"):
 
         with col2:
             confidence = prediction_proba[prediction] * 100
-            st.markdown(f'<div class="status-card" style="text-align: center;"><h4>Confidence Score</h4><h2 class="mono-text" style="color: #0ea5e9;">{confidence:.2f}%</h2></div>', unsafe_allow_html=True)
+            bar_color = "#ef4444" if prediction == 0 else "#22c55e"
+            st.markdown(f'''
+                <div class="status-card" style="text-align: center;">
+                    <h4>Confidence Score</h4>
+                    <h2 class="mono-text" style="color: {bar_color}; font-size: 2rem; margin-bottom: 0.5rem;">{confidence:.2f}%</h2>
+                    <div style="background: rgba(255, 255, 255, 0.1); border-radius: 9999px; height: 8px; width: 100%; overflow: hidden;">
+                        <div style="background: {bar_color}; width: {confidence:.2f}%; height: 100%; border-radius: 9999px; transition: width 0.5s ease;"></div>
+                    </div>
+                </div>
+            ''', unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("### Reasoning & Key Indicators:")
