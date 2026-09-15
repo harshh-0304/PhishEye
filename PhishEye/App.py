@@ -196,6 +196,16 @@ if st.button("Analyze URL", type="primary"):
             ''', unsafe_allow_html=True)
 
         st.markdown("---")
+        st.markdown("### Domain Health Metrics:")
+        m1, m2, m3 = st.columns(3)
+        ssl_val = "HTTPS Active" if input_features_df['SSLfinal_State'].iloc[0] == 1 else "No HTTPS"
+        url_len_val = f"{len(user_input)} Chars"
+        short_val = "Detected" if input_features_df['Shortining_Service'].iloc[0] == -1 else "None"
+        m1.metric("SSL Protocol", ssl_val, delta="Secure" if ssl_val == "HTTPS Active" else "-Risk", delta_color="normal" if ssl_val == "HTTPS Active" else "inverse")
+        m2.metric("URL Length", url_len_val, delta="Normal" if len(user_input) < 54 else "-Long", delta_color="normal" if len(user_input) < 54 else "inverse")
+        m3.metric("URL Shortener", short_val, delta="Clean" if short_val == "None" else "-Flagged", delta_color="normal" if short_val == "None" else "inverse")
+
+        st.markdown("---")
         st.markdown("### Reasoning & Key Indicators:")
 
         # Provide reasoning based on the input features and their importance
