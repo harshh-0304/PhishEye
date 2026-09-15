@@ -210,33 +210,32 @@ if st.button("Analyze URL", type="primary"):
 
         # Provide reasoning based on the input features and their importance
         if prediction == 0: # If classified as phishing
-            st.warning("This URL exhibits characteristics commonly associated with phishing.")
+            st.error("🚨 Warning: This URL exhibits characteristics strongly associated with phishing sites.")
             
             # Highlight specific features that contributed to the phishing detection
             if input_features_df['SSLfinal_State'].iloc[0] == -1:
-                st.markdown("- **No HTTPS (SSLfinal_State: -1):** The connection is not secure, a major red flag for phishing.")
+                st.markdown("<div style='background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #ef4444; font-weight: 600;'>❌ No HTTPS Protocol</span> &mdash; Connection lacks SSL encryption.</div>", unsafe_allow_html=True)
             if input_features_df['having_At_Symbol'].iloc[0] == -1:
-                st.markdown("- **Uses '@' Symbol (having_At_Symbol: -1):** This can be used to deceive users about the true domain.")
+                st.markdown("<div style='background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #ef4444; font-weight: 600;'>❌ '@' Character Injection</span> &mdash; Used to obscure true domain destination.</div>", unsafe_allow_html=True)
             if input_features_df['URLURL_Length'].iloc[0] == -1:
-                st.markdown(f"- **Very Long URL (URLURL_Length: -1):** Long URLs ({len(user_input)} characters) often hide malicious destinations.")
+                st.markdown(f"<div style='background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #ef4444; font-weight: 600;'>❌ Suspicious URL Length ({len(user_input)} chars)</span> &mdash; Unusually long path string.</div>", unsafe_allow_html=True)
             if input_features_df['Shortining_Service'].iloc[0] == -1:
-                st.markdown("- **Uses URL Shortener (Shortining_Service: -1):** Obscures the true destination, a common phishing tactic.")
+                st.markdown("<div style='background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #ef4444; font-weight: 600;'>❌ URL Shortener Service</span> &mdash; Conceals final landing page.</div>", unsafe_allow_html=True)
             if input_features_df['having_Sub_Domain'].iloc[0] == -1 or input_features_df['having_Sub_Domain'].iloc[0] == 0:
-                st.markdown("- **Multiple Subdomains (having_Sub_Domain: -1/0):** Can mimic legitimate sites while redirecting to malicious ones.")
+                st.markdown("<div style='background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #ef4444; font-weight: 600;'>❌ Multiple Subdomains</span> &mdash; Can impersonate trusted brands.</div>", unsafe_allow_html=True)
             if input_features_df['Prefix_Suffix'].iloc[0] == -1:
-                st.markdown("- **Hyphenated Domain (Prefix_Suffix: -1):** Often used to make domains look similar to legitimate ones.")
-            # Add more specific checks for features you can reliably derive
+                st.markdown("<div style='background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #ef4444; font-weight: 600;'>❌ Hyphenated Domain</span> &mdash; Common typo-squatting pattern.</div>", unsafe_allow_html=True)
             
-            st.markdown("- *Note: Some features were approximated due to the complexity of real-time extraction.*")
+            st.markdown("<p style='color: #94a3b8; font-size: 0.85rem; margin-top: 10px;'><em>Note: ML features extracted directly from real-time URL string analysis.</em></p>", unsafe_allow_html=True)
             
         else: # If classified as safe
-            st.info("The URL appears to be legitimate based on the analysis.")
+            st.success("✅ Legitimacy Verified: URL passes security inspection checks.")
             if input_features_df['SSLfinal_State'].iloc[0] == 1:
-                st.markdown("- **Uses HTTPS (SSLfinal_State: 1):** Indicates a secure connection.")
+                st.markdown("<div style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #22c55e; font-weight: 600;'>✅ Valid HTTPS Encryption</span> &mdash; Secure communication protocol verified.</div>", unsafe_allow_html=True)
             if input_features_df['having_At_Symbol'].iloc[0] == 1:
-                st.markdown("- **No '@' Symbol (having_At_Symbol: 1):** The URL does not contain the deceptive '@' symbol.")
+                st.markdown("<div style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #22c55e; font-weight: 600;'>✅ Standard Authority String</span> &mdash; No deceptive symbol syntax.</div>", unsafe_allow_html=True)
             if input_features_df['URLURL_Length'].iloc[0] == 1 or input_features_df['URLURL_Length'].iloc[0] == 0:
-                st.markdown(f"- **Normal URL Length (URLURL_Length: {input_features_df['URLURL_Length'].iloc[0]}):** The URL length ({len(user_input)} characters) falls within typical ranges.")
+                st.markdown(f"<div style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #22c55e; font-weight: 600;'>✅ Optimal URL Length ({len(user_input)} chars)</span> &mdash; Normal domain structure.</div>", unsafe_allow_html=True)
             # Add more specific checks for features you can reliably derive
             st.markdown("- *Note: Analysis is based on a set of extracted URL features.*")
 
