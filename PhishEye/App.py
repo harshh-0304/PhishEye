@@ -186,6 +186,9 @@ with st.container():
 
 st.markdown("---")
 
+if "history" not in st.session_state:
+    st.session_state["history"] = []
+
 if st.button("Analyze URL", type="primary"):
     if user_input:
         st.info("Analyzing the provided URL...")
@@ -196,6 +199,14 @@ if st.button("Analyze URL", type="primary"):
         # Make prediction
         prediction = model.predict(input_features_df)[0]
         prediction_proba = model.predict_proba(input_features_df)[0]
+        confidence = prediction_proba[prediction] * 100
+        status_label = "Phishing Detected" if prediction == 0 else "Safe Domain"
+
+        st.session_state["history"].insert(0, {
+            "URL": user_input,
+            "Verdict": status_label,
+            "Confidence": f"{confidence:.2f}%"
+        })
 
         st.markdown("### Analysis Result:")
 
