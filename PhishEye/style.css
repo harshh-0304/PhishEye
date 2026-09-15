@@ -124,3 +124,18 @@
     font-weight: 700;
     margin-top: 0;
 }
+
+/* Responsive Layout Media Queries */
+@media (max-width: 768px) {
+    .block-container {
+        padding-top: 1.5rem;
+        padding-bottom: 2rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .status-card {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+}
