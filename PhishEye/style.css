@@ -2,6 +2,18 @@
 
 /* Custom PhishEye CSS - Dark Tech Aesthetic */
 
+:root {
+    --bg-dark: #090d16;
+    --card-bg: rgba(24, 24, 27, 0.4);
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --accent-blue: #0ea5e9;
+    --accent-blue-hover: #0284c7;
+    --danger-red: #ef4444;
+    --success-green: #22c55e;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+}
+
 * {
     font-family: 'Geist', sans-serif !important;
 }
