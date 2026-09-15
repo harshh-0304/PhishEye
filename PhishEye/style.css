@@ -74,26 +74,34 @@
 .status-card {
     padding: 24px;
     border-radius: 16px;
-    background: rgba(24, 24, 27, 0.4); /* Zinc 900 transparent */
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05); /* Refractive outer edge */
+    background: rgba(24, 24, 27, 0.5); /* Zinc 900 transparent */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-subtle); /* Refractive outer edge */
     box-shadow: 
-        inset 0 1px 0 rgba(255, 255, 255, 0.1), /* Inner highlight */
-        0 8px 32px rgba(0, 0, 0, 0.4); /* Deep drop shadow */
+        inset 0 1px 0 rgba(255, 255, 255, 0.12), /* Inner highlight */
+        0 8px 32px rgba(0, 0, 0, 0.45); /* Deep drop shadow */
     margin-bottom: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.status-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        inset 0 1px 0 rgba(255, 255, 255, 0.15),
+        0 12px 36px rgba(0, 0, 0, 0.55);
 }
 
 .status-card.error {
-    background: rgba(153, 27, 27, 0.1); /* Red 900 */
-    border: 1px solid rgba(220, 38, 38, 0.2);
-    border-left: 4px solid #ef4444; /* Red 500 */
+    background: rgba(153, 27, 27, 0.15); /* Red 900 */
+    border: 1px solid rgba(220, 38, 38, 0.3);
+    border-left: 5px solid var(--danger-red); /* Red 500 */
 }
 
 .status-card.success {
-    background: rgba(22, 101, 52, 0.1); /* Green 900 */
-    border: 1px solid rgba(34, 197, 94, 0.2);
-    border-left: 4px solid #22c55e; /* Green 500 */
+    background: rgba(22, 101, 52, 0.15); /* Green 900 */
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-left: 5px solid var(--success-green); /* Green 500 */
 }
 
 /* Typography refinements inside cards */
