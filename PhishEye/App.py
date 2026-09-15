@@ -144,15 +144,17 @@ def local_css(file_name):
 
 local_css("style.css")
 
-st.markdown("<h1 style='text-align: center; color: #f8fafc; letter-spacing: -0.02em;'>🛡️ PhishEye Real-time Detector</h1>", unsafe_allow_html=True)
+st.markdown("""
+    <div style='text-align: center; margin-bottom: 2rem;'>
+        <span style='background: rgba(14, 165, 233, 0.15); color: #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.3); padding: 4px 12px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;'>AI Security Engine v2.0</span>
+        <h1 style='color: #f8fafc; letter-spacing: -0.02em; margin-top: 0.75rem; margin-bottom: 0.5rem;'>🛡️ PhishEye URL Inspector</h1>
+        <p style='color: #94a3b8; font-size: 1.05rem; max-width: 600px; margin: 0 auto;'>Instant Machine Learning threat detection for suspicious domains & URLs.</p>
+    </div>
+""", unsafe_allow_html=True)
 st.sidebar.image("https://img.icons8.com/color/96/000000/phishing.png", width=80)
 st.sidebar.title("About PhishEye")
 st.sidebar.info("This tool uses Machine Learning to analyze URL features and predict if a website is a phishing attempt or legitimate.")
 st.markdown("---")
-st.markdown("""
-    This application helps detect potential phishing attempts by analyzing various features of a URL.
-    Input a URL below to get an instant classification.
-""")
 
 with st.container():
     user_input = st.text_input("Enter URL to analyze:", "https://security-update-bankofamerica.com/login?id=123", help="Try entering a suspicious URL or a legitimate one like https://google.com")
