@@ -240,7 +240,10 @@ if st.button("Analyze URL", type="primary"):
             st.markdown("- *Note: Analysis is based on a set of extracted URL features.*")
 
 
-        st.expander("Show All Extracted Features (for debugging/detail)").dataframe(input_features_df.T) # Transpose for better viewing
+        with st.expander("🔍 Detailed 30-Feature ML Extraction Vector"):
+            df_display = input_features_df.T.reset_index()
+            df_display.columns = ["Feature Name", "Extracted Value (-1: Risk, 0: Neutral, 1: Safe)"]
+            st.dataframe(df_display, use_container_width=True, hide_index=True)
         
     else:
         st.warning("Please enter a URL to analyze.")
