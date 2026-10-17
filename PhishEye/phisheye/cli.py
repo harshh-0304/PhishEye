@@ -107,11 +107,88 @@ def scan_single_url(
     return 1 if scan.is_phishing else 0
 
 
+def scan_batch_file(
+    file_path: str,
+    detector: PhishEyeDetector,
+    output_path: Optional[str] = None,
+    as_json: bool = False,
+    defang_output: bool = False,
+    run_all: bool = True
+) -> int:
+    """Scan multiple URLs from a text file or CSV."""
+    with open(file_path, "r", encoding="utf-8") as f:
+        lines = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+
+    results = []
+    phishing_count = 0
+
+    print(f"\n{COLOR_CYAN}Loaded {len(lines)} URLs from {file_path}. Commencing scan...{COLOR_RESET}\n")
+
+    for idx, raw_url in enumerate(lines, 1):
+        active_url = refang_url(raw_url) if is_defanged(raw_url) else raw_url
+        scan = detector.predict(active_url)
+        display_url = defang_url(active_url) if defang_output else active_url
+
+        if scan.is_phishing:
+            phishing_count += 1
+            status_tag = f"{COLOR_RED}[PHISHING]{COLOR_RESET}"
+        else:
+            status_tag = f"{COLOR_GREEN}[SAFE]{COLOR_RESET}"
+
+        item = {
+            "index": idx,
+            "url": display_url,
+            "verdict": scan.verdict,
+            "is_phishing": scan.is_phishing,
+            "confidence": scan.confidence,
+            "risk_score": scan.risk_score,
+            "risk_indicators": scan.risk_indicators,
+        }
+
+        if run_all:
+            item["homograph"] = analyze_homograph(active_url).is_homograph
+            item["typosquat"] = check_typosquatting(active_url).is_impersonating
+            item["entropy"] = round(analyze_domain_entropy(active_url).entropy, 3)
+            item["tld_risk"] = evaluate_tld_reputation(active_url).risk_level
+
+        results.append(item)
+        if not as_json:
+            print(f"[{idx:03d}/{len(lines):03d}] {status_tag} {scan.confidence:5.1f}% | {display_url[:60]}")
+
+    safe_count = len(lines) - phishing_count
+
+    if not as_json:
+        print(f"\n{COLOR_BOLD}Scan Summary:{COLOR_RESET}")
+        print(f"  Total Scanned:  {len(lines)}")
+        print(f"  {COLOR_RED}Phishing Flags:{COLOR_RESET} {phishing_count}")
+        print(f"  {COLOR_GREEN}Safe Passed:   {COLOR_RESET} {safe_count}")
+
+    if output_path:
+        if output_path.endswith(".csv"):
+            import pandas as pd
+            df = pd.DataFrame(results)
+            df.to_csv(output_path, index=False)
+            print(f"\n{COLOR_CYAN}Exported CSV report to: {output_path}{COLOR_RESET}")
+        else:
+            with open(output_path, "w", encoding="utf-8") as out:
+                json.dump(results, out, indent=2)
+            print(f"\n{COLOR_CYAN}Exported JSON report to: {output_path}{COLOR_RESET}")
+
+    if as_json and not output_path:
+        print(json.dumps(results, indent=2))
+
+    return 1 if phishing_count > 0 else 0
+
+
 def main(args: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="PhishEye - Real-time ML-powered Phishing Threat Detection CLI"
     )
-    parser.add_argument("-u", "--url", type=str, help="Single URL to inspect")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-u", "--url", type=str, help="Single URL to inspect")
+    group.add_argument("-f", "--file", type=str, help="Path to text or CSV file containing URLs")
+
+    parser.add_argument("-o", "--output", type=str, help="Path to export report (JSON or CSV)")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format")
     parser.add_argument("--defang", action="store_true", help="Defang URLs in terminal output")
     parser.add_argument("--no-banner", action="store_true", help="Suppress introductory banner")
@@ -119,22 +196,32 @@ def main(args: Optional[List[str]] = None) -> int:
 
     parsed_args = parser.parse_args(args)
 
-    if not parsed_args.url:
-        parser.print_help()
-        return 2
-
     if not parsed_args.json and not parsed_args.no_banner:
         print_banner()
 
     detector = PhishEyeDetector()
-    return scan_single_url(
-        url=parsed_args.url,
-        detector=detector,
-        as_json=parsed_args.json,
-        defang_output=parsed_args.defang,
-        run_all=parsed_args.all
-    )
+
+    if parsed_args.url:
+        return scan_single_url(
+            url=parsed_args.url,
+            detector=detector,
+            as_json=parsed_args.json,
+            defang_output=parsed_args.defang,
+            run_all=parsed_args.all
+        )
+    elif parsed_args.file:
+        return scan_batch_file(
+            file_path=parsed_args.file,
+            detector=detector,
+            output_path=parsed_args.output,
+            as_json=parsed_args.json,
+            defang_output=parsed_args.defang,
+            run_all=parsed_args.all
+        )
+
+    return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
+
