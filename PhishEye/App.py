@@ -67,6 +67,20 @@ with st.sidebar:
     st.markdown("### Stack & Model")
     st.caption("• Framework: Streamlit + Python\n• Model: Scikit-learn Classifier\n• Features: 30 URL vectors")
     st.markdown("---")
+
+    from phisheye.security import defang_url, refang_url, is_defanged
+    with st.expander("🛠️ SOC Defang Toolkit", expanded=False):
+        st.caption("Defang URLs before logging into incident tickets to prevent accidental click-throughs.")
+        tool_url = st.text_input("Raw or Defanged URL:", key="sidebar_defang_input", placeholder="https://evil.com")
+        col_df1, col_df2 = st.columns(2)
+        if col_df1.button("🛡️ Defang", use_container_width=True):
+            if tool_url:
+                st.code(defang_url(tool_url), language="text")
+        if col_df2.button("🔓 Refang", use_container_width=True):
+            if tool_url:
+                st.code(refang_url(tool_url), language="text")
+
+    st.markdown("---")
     st.markdown("[🔗 GitHub Repository](https://github.com/harshh-0304/PhishEye)")
 
 tab_single, tab_batch = st.tabs(["🔍 Single URL Inspector", "📂 Batch URL Scanner"])
