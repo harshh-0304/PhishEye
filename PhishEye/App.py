@@ -69,10 +69,11 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("[🔗 GitHub Repository](https://github.com/harshh-0304/PhishEye)")
 
-st.markdown("---")
+tab_single, tab_batch = st.tabs(["🔍 Single URL Inspector", "📂 Batch URL Scanner"])
 
-with st.container():
-    st.markdown("**Quick Preset Test Cases:**")
+with tab_single:
+    with st.container():
+        st.markdown("**Quick Preset Test Cases:**")
     btn_col1, btn_col2, btn_col3 = st.columns(3)
     default_url = "https://security-update-bankofamerica.com/login?id=123"
     if "current_url" not in st.session_state:
@@ -227,6 +228,83 @@ if st.button("Analyze URL", type="primary"):
         
     else:
         st.warning("Please enter a URL to analyze.")
+
+with tab_batch:
+    st.markdown("### 📂 High-Throughput Batch URL Inspection")
+    st.caption("Upload a `.txt` or `.csv` file containing URLs, or paste multiple targets to perform bulk classification.")
+
+    sample_batch_text = (
+        "https://google.com\n"
+        "http://paypal-security-account.login-auth.com/verify@user\n"
+        "https://github.com\n"
+        "http://bit.ly/secure-account-login\n"
+        "https://microsoft.com\n"
+        "http://192.168.1.1/admin-login"
+    )
+
+    col_b1, col_b2 = st.columns([1, 1])
+    with col_b1:
+        uploaded_file = st.file_uploader("Upload URL list (.txt or .csv)", type=["txt", "csv"])
+    with col_b2:
+        if st.button("Load Predefined Batch Sample", use_container_width=True):
+            st.session_state["batch_input_text"] = sample_batch_text
+
+    batch_text = st.text_area(
+        "Paste URLs (one per line):",
+        value=st.session_state.get("batch_input_text", ""),
+        height=140,
+        placeholder="https://example.com\nhttps://suspicious-site.net"
+    )
+
+    if st.button("🚀 Run Batch Security Scan", type="primary"):
+        urls_to_scan = []
+        if uploaded_file is not None:
+            content = uploaded_file.read().decode("utf-8")
+            urls_to_scan = [u.strip() for u in content.splitlines() if u.strip() and not u.strip().startswith("#")]
+        elif batch_text.strip():
+            urls_to_scan = [u.strip() for u in batch_text.splitlines() if u.strip() and not u.strip().startswith("#")]
+
+        if not urls_to_scan:
+            st.warning("Please upload a file or paste at least one URL to scan.")
+        else:
+            progress_bar = st.progress(0.0)
+            status_text = st.empty()
+            batch_results = []
+
+            for i, u in enumerate(urls_to_scan):
+                status_text.text(f"Scanning target {i + 1} of {len(urls_to_scan)}: {u[:40]}...")
+                scan = detector.predict(u)
+                batch_results.append({
+                    "Target URL": u,
+                    "Verdict": "🚨 Phishing" if scan.is_phishing else "✅ Safe",
+                    "Confidence": f"{scan.confidence:.2f}%",
+                    "Risk Score": f"{scan.risk_score:.3f}",
+                    "Key Threat Signal": scan.risk_indicators[0] if scan.risk_indicators else "None (Clean)"
+                })
+                progress_bar.progress((i + 1) / len(urls_to_scan))
+
+            status_text.empty()
+            progress_bar.empty()
+
+            df_batch = pd.DataFrame(batch_results)
+            phish_total = sum(1 for r in batch_results if "Phishing" in r["Verdict"])
+            safe_total = len(batch_results) - phish_total
+
+            bm1, bm2, bm3 = st.columns(3)
+            bm1.metric("Total Scanned", len(batch_results))
+            bm2.metric("Phishing Flagged", phish_total, delta=f"-{phish_total}" if phish_total > 0 else "0", delta_color="inverse")
+            bm3.metric("Legitimate Verified", safe_total, delta=f"+{safe_total}")
+
+            st.dataframe(df_batch, use_container_width=True, hide_index=True)
+
+            csv_data = df_batch.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                label="📥 Download Batch Results (CSV)",
+                data=csv_data,
+                file_name="phisheye_batch_scan_results.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
 
 st.markdown("---")
 st.markdown("""
