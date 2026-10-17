@@ -97,14 +97,12 @@ if st.button("Analyze URL", type="primary"):
     if user_input:
         st.info("Analyzing the provided URL...")
         
-        # Get features from the input URL
-        input_features_df = get_features_from_url(user_input)
-
-        # Make prediction
-        prediction = model.predict(input_features_df)[0]
-        prediction_proba = model.predict_proba(input_features_df)[0]
-        confidence = prediction_proba[prediction] * 100
-        status_label = "Phishing Detected" if prediction == 0 else "Safe Domain"
+        # Use unified detection pipeline
+        scan = detector.predict(user_input)
+        input_features_df = detector.extractor.to_dataframe(user_input)
+        prediction = 0 if scan.is_phishing else 1
+        confidence = scan.confidence
+        status_label = scan.verdict
 
         st.session_state["history"].insert(0, {
             "URL": user_input,
@@ -225,7 +223,30 @@ if st.button("Analyze URL", type="primary"):
         if len(st.session_state["history"]) > 1:
             with st.expander(f"📜 Session Scan History ({len(st.session_state['history'])} URLs scanned)"):
                 st.dataframe(pd.DataFrame(st.session_state["history"]), use_container_width=True, hide_index=True)
-        
+
+        from phisheye.reporter import generate_markdown_report, generate_json_report
+        md_report = generate_markdown_report(scan)
+        json_report = generate_json_report(scan)
+
+        st.markdown("---")
+        st.markdown("### 📥 Export Forensic Threat Report:")
+        dcol1, dcol2 = st.columns(2)
+        with dcol1:
+            st.download_button(
+                label="📄 Download Report (Markdown)",
+                data=md_report,
+                file_name="phisheye_threat_report.md",
+                mime="text/markdown",
+                use_container_width=True
+            )
+        with dcol2:
+            st.download_button(
+                label="📊 Download Telemetry (JSON)",
+                data=json_report,
+                file_name="phisheye_threat_report.json",
+                mime="application/json",
+                use_container_width=True
+            )
     else:
         st.warning("Please enter a URL to analyze.")
 
