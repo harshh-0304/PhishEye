@@ -1,0 +1,17 @@
+{
+  "dataset_rows": 11055,
+  "feature_count": 30,
+  "cv_accuracy_mean": 0.9697874265038445,
+  "cv_roc_auc_mean": 0.9956196752565616,
+  "accuracy": 0.9858887381275441,
+  "precision": 0.98371755602128,
+  "recall": 0.9910670781224622,
+  "f1": 0.987378640776699,
+  "roc_auc": 0.9992275421688361,
+  "confusion_matrix": {
+    "true_negative": 4797,
+    "false_positive": 101,
+    "false_negative": 55,
+    "true_positive": 6102
+  }
+}
