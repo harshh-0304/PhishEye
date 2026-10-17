@@ -134,15 +134,52 @@ if st.button("Analyze URL", type="primary"):
                 </div>
             ''', unsafe_allow_html=True)
 
+        # Deep Forensic Telemetry
+        from phisheye.entropy import analyze_domain_entropy
+        from phisheye.homograph import analyze_homograph
+        from phisheye.typosquat import check_typosquatting
+        from phisheye.tld_intel import evaluate_tld_reputation
+
+        entropy_report = analyze_domain_entropy(user_input)
+        typo_report = check_typosquatting(user_input)
+        homo_report = analyze_homograph(user_input)
+        tld_report = evaluate_tld_reputation(user_input)
+
         st.markdown("---")
-        st.markdown("### Domain Health Metrics:")
-        m1, m2, m3 = st.columns(3)
+        st.markdown("### Domain Health & Forensic Telemetry:")
+        m1, m2, m3, m4 = st.columns(4)
         ssl_val = "HTTPS Active" if input_features_df['SSLfinal_State'].iloc[0] == 1 else "No HTTPS"
         url_len_val = f"{len(user_input)} Chars"
-        short_val = "Detected" if input_features_df['Shortining_Service'].iloc[0] == -1 else "None"
+        short_val = "Detected" if input_features_df['Shortining_Service'].iloc[0] == -1 else "Clean"
         m1.metric("SSL Protocol", ssl_val, delta="Secure" if ssl_val == "HTTPS Active" else "-Risk", delta_color="normal" if ssl_val == "HTTPS Active" else "inverse")
         m2.metric("URL Length", url_len_val, delta="Normal" if len(user_input) < 54 else "-Long", delta_color="normal" if len(user_input) < 54 else "inverse")
-        m3.metric("URL Shortener", short_val, delta="Clean" if short_val == "None" else "-Flagged", delta_color="normal" if short_val == "None" else "inverse")
+        m3.metric("URL Shortener", short_val, delta="Clean" if short_val == "Clean" else "-Flagged", delta_color="normal" if short_val == "Clean" else "inverse")
+        m4.metric("Shannon Entropy", f"{entropy_report.entropy:.2f}", delta=entropy_report.entropy_category, delta_color="inverse" if entropy_report.is_dga_candidate else "normal")
+
+        # High-Risk Threat Signal Callouts
+        if typo_report.is_impersonating:
+            st.markdown(f"""
+                <div style='background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 8px; padding: 12px 16px; margin-top: 12px; margin-bottom: 12px;'>
+                    <h4 style='color: #ef4444; margin: 0 0 4px 0;'>🚨 Brand Impersonation Alert ({typo_report.attack_vector})</h4>
+                    <p style='color: #fca5a5; margin: 0; font-size: 0.9rem;'>{typo_report.details} Target brand: <strong>{typo_report.impersonated_brand}</strong> (Official: {typo_report.legitimate_domain})</p>
+                </div>
+            """, unsafe_allow_html=True)
+
+        if homo_report.is_homograph:
+            st.markdown(f"""
+                <div style='background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;'>
+                    <h4 style='color: #f59e0b; margin: 0 0 4px 0;'>⚠️ IDN Homograph / Punycode Alert</h4>
+                    <p style='color: #fde68a; margin: 0; font-size: 0.9rem;'>{homo_report.risk_summary}</p>
+                </div>
+            """, unsafe_allow_html=True)
+
+        if tld_report.risk_level in ("HIGH", "CRITICAL"):
+            st.markdown(f"""
+                <div style='background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 12px 16px; margin-bottom: 12px;'>
+                    <h4 style='color: #f87171; margin: 0 0 4px 0;'>⚠️ Suspicious Top-Level Domain (.{tld_report.tld})</h4>
+                    <p style='color: #fca5a5; margin: 0; font-size: 0.9rem;'>{tld_report.abuse_reason}</p>
+                </div>
+            """, unsafe_allow_html=True)
 
         st.markdown("---")
         st.markdown("### Reasoning & Key Indicators:")
@@ -175,8 +212,8 @@ if st.button("Analyze URL", type="primary"):
                 st.markdown("<div style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #22c55e; font-weight: 600;'>✅ Standard Authority String</span> &mdash; No deceptive symbol syntax.</div>", unsafe_allow_html=True)
             if input_features_df['URLURL_Length'].iloc[0] == 1 or input_features_df['URLURL_Length'].iloc[0] == 0:
                 st.markdown(f"<div style='background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;'><span style='color: #22c55e; font-weight: 600;'>✅ Optimal URL Length ({len(user_input)} chars)</span> &mdash; Normal domain structure.</div>", unsafe_allow_html=True)
-            # Add more specific checks for features you can reliably derive
             st.markdown("- *Note: Analysis is based on a set of extracted URL features.*")
+
 
 
         with st.expander("🔍 Detailed 30-Feature ML Extraction Vector"):
