@@ -1,0 +1,48 @@
+name: PhishEye CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Test Suite (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r PhishEye/requirements.txt
+
+      - name: Syntax and Bytecode Validation
+        run: |
+          python -m compileall PhishEye/
+
+      - name: Run Unit & Integration Test Suite
+        env:
+          PYTHONPATH: PhishEye
+        run: |
+          python -m unittest discover -s PhishEye/tests -v
+
+      - name: CLI Smoke Test
+        env:
+          PYTHONPATH: PhishEye
+        run: |
+          python PhishEye/cli.py -u "https://google.com" --no-banner
+          python PhishEye/cli.py -u "http://paypal-security-account.login-auth.com/verify@user" --json || true
