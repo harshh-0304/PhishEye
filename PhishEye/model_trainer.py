@@ -1,69 +1,79 @@
+import os
+import sys
+import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier # Or other classifier of your choice
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import classification_report, accuracy_score
-import joblib
 
-# --- 1. Load and Inspect Data (already done, but good to keep for reference) ---
-# Assuming your dataset is named 'phishing_data.csv' and is in a 'data' folder
-# Adjust the path if your file name or location is different
-df = pd.read_csv('/home/kiyotaka/Downloads/project/PhishEye/dataset.csv')# <--- IMPORTANT: Update this file name if needed
 
-print(df.head())
-print(df.info())
-print(df.columns)
-print(df['Result'].value_counts()) # Check the distribution of your target variable
+def find_dataset_path():
+    """Locate dataset.csv robustly across relative and parent paths."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.join(base_dir, 'dataset.csv'),
+        os.path.join(base_dir, '..', 'dataset.csv'),
+        'dataset.csv',
+        'PhishEye/dataset.csv'
+    ]
+    for path in candidates:
+        if os.path.exists(path):
+            return os.path.abspath(path)
+    raise FileNotFoundError(f"dataset.csv not found in candidate locations: {candidates}")
 
-# --- 2. Data Preparation ---
-# Your dataset already has numerical features, so we don't need to define
-# new feature extraction functions for URL parsing.
 
-# Define features (X) and target (y)
-# We'll drop 'index' as it's just an identifier and 'Result' as it's the target.
-X = df.drop(['index', 'Result'], axis=1)
-y = df['Result']
+def train_model():
+    dataset_path = find_dataset_path()
+    print(f"Loading dataset from: {dataset_path}")
+    df = pd.read_csv(dataset_path)
 
-# It's good practice to ensure the target variable is 0 or 1.
-# Based on your output, Result is -1 or 1. Let's map -1 to 0 (phishing) and 1 to 1 (safe).
-# You can reverse this if your interpretation of -1 and 1 is different.
-y = y.map({-1: 0, 1: 1})
-print("\nMapped 'Result' values:")
-print(y.value_counts())
+    print(f"Dataset shape: {df.shape}")
+    print(df['Result'].value_counts())
 
-# --- 3. Split Data into Training and Testing Sets ---
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # --- Data Preparation ---
+    X = df.drop(['index', 'Result'], axis=1, errors='ignore')
+    y = df['Result']
 
-print(f"\nTraining samples: {len(X_train)}")
-print(f"Testing samples: {len(X_test)}")
+    # Map -1 to 0 (phishing) and 1 to 1 (safe)
+    y = y.map({-1: 0, 1: 1})
+    print("\nMapped 'Result' distribution (0=Phishing, 1=Safe):")
+    print(y.value_counts())
 
-# --- 4. Train a Machine Learning Model ---
-# Using RandomForestClassifier as it's a good general-purpose model
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
+    # --- Train / Test Split ---
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=42, stratify=y
+    )
+    print(f"Training samples: {len(X_train)}, Testing samples: {len(X_test)}")
 
-print("\nModel training complete.")
+    # --- Model Training ---
+    print("\nTraining RandomForestClassifier (n_estimators=100)...")
+    model = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
+    model.fit(X_train, y_train)
 
-# --- 5. Evaluate the Model ---
-y_pred = model.predict(X_test)
+    # --- Evaluation ---
+    y_pred = model.predict(X_test)
+    acc = accuracy_score(y_test, y_pred)
+    print(f"\nModel Accuracy: {acc * 100:.2f}%")
+    print("\nClassification Report:")
+    print(classification_report(y_test, y_pred, target_names=["Phishing", "Safe"]))
 
-print(f"\nAccuracy: {accuracy_score(y_test, y_pred):.2f}")
-print("\nClassification Report:")
-print(classification_report(y_test, y_pred))
+    # --- Save Artifacts ---
+    target_dir = os.path.dirname(dataset_path)
+    model_path = os.path.join(target_dir, 'phishing_detector_model.pkl')
+    features_path = os.path.join(target_dir, 'feature_names.pkl')
 
-# --- 6. Save the Trained Model and Feature Names ---
-# It's crucial to save the list of feature names in the correct order,
-# as the Streamlit app will need to create input in this exact order.
-model_filename = 'phishing_detector_model.pkl'
-joblib.dump(model, model_filename)
+    joblib.dump(model, model_path)
+    joblib.dump(X.columns.tolist(), features_path)
+    print(f"Saved model to: {model_path}")
+    print(f"Saved feature names to: {features_path}")
 
-# Save the feature names separately
-feature_names_filename = 'feature_names.pkl'
-joblib.dump(X.columns.tolist(), feature_names_filename)
+    # Top 10 feature importances
+    print("\nTop 10 Feature Importances:")
+    importances = pd.Series(model.feature_importances_, index=X.columns)
+    print(importances.nlargest(10))
 
-print(f"\nModel saved as {model_filename}")
-print(f"Feature names saved as {feature_names_filename}")
+    return model, X.columns.tolist()
 
-# Optional: Print feature importances for reasoning
-print("\nFeature Importances (Top 10):")
-importances = pd.Series(model.feature_importances_, index=X.columns)
-print(importances.nlargest(10))
+
+if __name__ == '__main__':
+    train_model()
