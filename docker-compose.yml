@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  phisheye-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: phisheye-ui
+    ports:
+      - "8501:8501"
+    restart: unless-stopped
+    environment:
+      - STREAMLIT_SERVER_PORT=8501
+      - STREAMLIT_SERVER_ADDRESS=0.0.0.0
+
+  phisheye-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: phisheye-api
+    command: ["python", "-c", "from phisheye.api import run_api_server; run_api_server('0.0.0.0', 8000)"]
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
