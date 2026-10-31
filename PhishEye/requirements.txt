@@ -16,7 +16,7 @@ MarkupSafe==3.0.3
 narwhals==2.9.0
 numpy==2.3.4
 packaging==25.0
-pandas==2.3.3
+pandas==3.1.0
 pillow==11.3.0
 protobuf==6.33.0
 pyarrow==22.0.0
