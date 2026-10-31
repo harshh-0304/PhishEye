@@ -6,8 +6,8 @@ help:  ## Show this help
 install:  ## Install dependencies
 	pip install -r PhishEye/requirements.txt
 
-test:  ## Run the test suite
-	cd PhishEye && pytest -q
+test:  ## Run the test suite (matches CI: stdlib unittest)
+	PYTHONPATH=PhishEye python -m unittest discover -s PhishEye/tests -v
 
 app:  ## Launch the Streamlit web app
 	streamlit run PhishEye/App.py
