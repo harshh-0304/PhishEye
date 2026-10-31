@@ -10,7 +10,7 @@ authors = [
 ]
 description = "Real-Time Machine Learning Phishing URL & Threat Detection Engine"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 keywords = ["security", "cybersecurity", "phishing", "machine-learning", "threat-detection", "url-analysis"]
 classifiers = [
@@ -19,7 +19,6 @@ classifiers = [
     "Intended Audience :: System Administrators",
     "Topic :: Security",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: MIT License",
