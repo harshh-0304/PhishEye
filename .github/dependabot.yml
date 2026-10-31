@@ -7,6 +7,16 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps"
+    # One grouped PR for all non-major updates instead of one per package.
+    groups:
+      python-deps:
+        update-types:
+          - "minor"
+          - "patch"
+    # Major bumps break the test suite (scipy/pandas/etc.) — don't auto-open them.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -14,6 +24,10 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
 
   - package-ecosystem: "docker"
     directory: "/"
